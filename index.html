@@ -886,6 +886,7 @@
         const loadedImagesRef = useRef({});
         const lastTickSegmentRef = useRef(-1);
         const audioCtxRef = useRef(null);
+        const pointerDeflectionRef = useRef(0);
 
         // Sound effects for Voice Challenge
         const playErrorTone = useCallback(() => {
@@ -1294,15 +1295,34 @@
           ctx.strokeStyle = '#333333';
           ctx.stroke();
 
-          // Pointer
+          // Pointer con simulación física de lengüeta / vibración
+          const pivotX = centerX + radius + 18;
+          const pivotY = centerY;
+          const deflection = pointerDeflectionRef.current || 0;
+
+          ctx.save();
+          ctx.translate(pivotX, pivotY);
+          ctx.rotate(deflection);
+
           ctx.beginPath();
-          ctx.moveTo(centerX + radius - 15, centerY);
-          ctx.lineTo(centerX + radius + 18, centerY - 15);
-          ctx.lineTo(centerX + radius + 18, centerY + 15);
+          ctx.moveTo(-33, 0);
+          ctx.lineTo(0, -15);
+          ctx.lineTo(0, 15);
           ctx.closePath();
           ctx.fillStyle = '#e11d48';
           ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#333333';
           ctx.stroke();
+
+          // Perno de sujeción central de la lengüeta
+          ctx.beginPath();
+          ctx.arc(0, 0, 3.5, 0, 2 * Math.PI);
+          ctx.fillStyle = '#ffffff';
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.restore();
         }, [validWords, colors, canvasSize]);
 
         useEffect(() => {
@@ -1348,16 +1368,25 @@
               const easeOut = 1 - Math.pow(1 - progress, 3);
               currentAngleRef.current += (1 - easeOut) * angularVelocityRef.current;
               
-              // Emite sonido de tick cada vez que pasa por el borde de una sección
+              // Emite sonido de tick cada vez que pasa por el borde de una sección y sacude la lengüeta
               const currentSegment = Math.floor(currentAngleRef.current / segmentAngle);
               if (currentSegment !== lastTickSegmentRef.current) {
                 playTick();
                 lastTickSegmentRef.current = currentSegment;
+                // Desviación elástica al golpear la clavija
+                pointerDeflectionRef.current = 0.28;
+              }
+
+              // Rebote elástico amortiguado que produce la vibración física real
+              pointerDeflectionRef.current = -pointerDeflectionRef.current * 0.65;
+              if (Math.abs(pointerDeflectionRef.current) < 0.005) {
+                pointerDeflectionRef.current = 0;
               }
 
               drawWheel();
               animationFrameRef.current = requestAnimationFrame(animate);
             } else {
+              pointerDeflectionRef.current = 0;
               setIsSpinning(false);
               const currentValid = validWordsRef.current;
               const numSegments = currentValid.length;
