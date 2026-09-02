@@ -44,16 +44,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
     <style>
+      @font-face {
+        font-family: 'Kiddy Bubble';
+        src: local('Kiddy Bubble'), local('KiddyBubble'), url('https://fonts.cdnfonts.com/s/72985/KiddyBubble.woff') format('woff');
+        font-display: swap;
+      }
       body {
         margin: 0;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        overflow-x: hidden;
       }
       .font-bubble {
-        font-family: 'Bubblegum Sans', cursive, system-ui, sans-serif;
+        font-family: 'Kiddy Bubble', 'Bubblegum Sans', cursive, system-ui, sans-serif;
       }
       ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 6px;
       }
       ::-webkit-scrollbar-track {
         background: rgba(0, 0, 0, 0.05);
@@ -1213,8 +1219,10 @@
 
         useEffect(() => {
           const updateSize = () => {
-            const size = Math.min(window.innerWidth - 32, window.innerHeight - 90, 800);
-            setCanvasSize(Math.max(size, 280));
+            const widthBound = window.innerWidth - 32;
+            const heightBound = window.innerHeight - (window.innerWidth < 640 ? 160 : 130);
+            const size = Math.min(widthBound, heightBound, 750);
+            setCanvasSize(Math.max(size, 240));
           };
           updateSize();
           window.addEventListener('resize', updateSize);
@@ -1437,7 +1445,7 @@
             };
             const utterance = new SpeechSynthesisUtterance(letter);
             utterance.lang = 'en-US';
-            utterance.rate = 0.85;
+            utterance.rate = 0.8;
             utterance.onend = done;
             utterance.onerror = done;
             window.speechSynthesis.speak(utterance);
@@ -1486,7 +1494,7 @@
 
         return (
           <div 
-            className="fixed inset-0 z-50 flex flex-col items-center justify-between p-4 transition-colors duration-300" 
+            className="fixed inset-0 z-50 flex flex-col items-center justify-between p-2 sm:p-4 transition-colors duration-300 overflow-hidden" 
             style={{ 
               backgroundColor: isWhiteBg ? '#ffffff' : (background.startsWith('#') ? background : '#1f2937'),
               backgroundImage: (!isWhiteBg && !background.startsWith('#')) ? `url(${background})` : 'none',
@@ -1495,48 +1503,49 @@
             }}
           >
             {/* Header / Top Bar */}
-            <div className="relative w-full flex justify-between items-start z-10">
-              <div className="flex items-center z-10">
+            <div className="relative w-full flex justify-between items-center z-10 px-1 sm:px-2 pt-1">
+              <div className="flex items-center z-10 flex-shrink-0">
                 {logo ? (
-                  <img src={logo} alt="Logo" className="h-12 w-auto max-w-[150px] object-contain" />
+                  <img src={logo} alt="Logo" className="h-8 sm:h-12 w-auto max-w-[100px] sm:max-w-[150px] object-contain" />
                 ) : (
-                  <div className="text-3xl">🐝</div>
+                  <div className="text-2xl sm:text-3xl">🐝</div>
                 )}
               </div>
 
               {/* Title exactly centered relative to the wheel */}
               <div className="absolute left-1/2 -translate-x-1/2 top-0 pointer-events-none z-0 flex justify-center items-center w-auto">
-                <h1 className={`font-bubble text-4xl sm:text-6xl font-black tracking-widest drop-shadow-md transition-colors duration-300 whitespace-nowrap ${isWhiteBg ? 'text-black' : 'text-white'}`}>
+                <h1 className={`font-bubble text-2xl xs:text-3xl sm:text-5xl md:text-6xl font-black tracking-wider sm:tracking-widest drop-shadow-md transition-colors duration-300 whitespace-nowrap ${isWhiteBg ? 'text-black' : 'text-white'}`}>
                   FOOTPRINTS
                 </h1>
               </div>
 
-              <div className="flex items-start space-x-2 z-10 justify-end ml-auto">
+              <div className="flex items-center sm:items-start space-x-1.5 sm:space-x-2 z-10 justify-end ml-auto flex-shrink-0">
                 {removedWordIds.size > 0 && (
                   <button
                     onClick={() => setRemovedWordIds(new Set())}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow transition"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl shadow transition"
                     title="Restablecer palabras en la ruleta"
                   >
-                    🔄 Restablecer Ruleta ({removedWordIds.size})
+                    🔄 <span className="hidden xs:inline">Restablecer</span> ({removedWordIds.size})
                   </button>
                 )}
-                <div className="flex flex-col items-end space-y-1.5">
+                <div className="flex flex-col items-end space-y-1 sm:space-y-1.5">
                   <button
                     onClick={() => setIsWhiteBg(!isWhiteBg)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition border flex items-center space-x-1.5 ${
+                    className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold shadow-sm sm:shadow-md transition border flex items-center space-x-1 sm:space-x-1.5 ${
                       isWhiteBg
                         ? 'bg-gray-800 text-white border-gray-600 hover:bg-gray-700'
                         : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
                     }`}
                     title="Cambiar color de fondo a blanco / oscuro"
                   >
-                    <span className={`w-3 h-3 rounded-full border ${isWhiteBg ? 'bg-gray-900 border-gray-400' : 'bg-white border-gray-400'}`}></span>
-                    <span>{isWhiteBg ? 'Fondo Oscuro' : 'Fondo Blanco'}</span>
+                    <span className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border ${isWhiteBg ? 'bg-gray-900 border-gray-400' : 'bg-white border-gray-400'}`}></span>
+                    <span className="hidden xs:inline">{isWhiteBg ? 'Fondo Oscuro' : 'Fondo Blanco'}</span>
+                    <span className="xs:hidden">{isWhiteBg ? 'Oscuro' : 'Blanco'}</span>
                   </button>
                   <button
                     onClick={() => setIsMuted(!isMuted)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition border flex items-center space-x-1.5 ${
+                    className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold shadow-sm sm:shadow-md transition border flex items-center space-x-1 sm:space-x-1.5 ${
                       isMuted
                         ? 'bg-rose-600 text-white border-rose-500 hover:bg-rose-700'
                         : isWhiteBg
@@ -1546,11 +1555,11 @@
                     title="Eliminar o activar sonido"
                   >
                     <span>{isMuted ? '🔇' : '🔊'}</span>
-                    <span>{isMuted ? 'Sin Sonido' : 'Con Sonido'}</span>
+                    <span className="hidden xs:inline">{isMuted ? 'Sin Sonido' : 'Con Sonido'}</span>
                   </button>
                   <button
                     onClick={() => setHideLetters(!hideLetters)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition border flex items-center space-x-1.5 ${
+                    className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold shadow-sm sm:shadow-md transition border flex items-center space-x-1 sm:space-x-1.5 ${
                       hideLetters
                         ? 'bg-amber-600 text-white border-amber-500 hover:bg-amber-700'
                         : isWhiteBg
@@ -1560,32 +1569,32 @@
                     title="Eliminar o mostrar letras"
                   >
                     <span>{hideLetters ? '🙈' : '🔤'}</span>
-                    <span>{hideLetters ? 'Sin Letras' : 'Con Letras'}</span>
+                    <span className="hidden xs:inline">{hideLetters ? 'Sin Letras' : 'Con Letras'}</span>
                   </button>
                 </div>
                 <button
                   onClick={onClose}
-                  className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full font-bold shadow-lg transition"
+                  className="bg-red-500 hover:bg-red-600 text-white p-1.5 sm:p-2 rounded-full font-bold shadow-lg transition"
                   title="Close Wheel"
                 >
-                  <XIcon className="h-6 w-6" />
+                  <XIcon className="h-4 w-4 sm:h-6 sm:w-6" />
                 </button>
               </div>
             </div>
 
             {/* Wheel Container */}
-            <div className="relative flex-1 flex items-center justify-center my-4 cursor-pointer" onClick={handleContainerClick}>
+            <div className="relative flex-1 flex items-center justify-center my-2 sm:my-4 cursor-pointer w-full max-h-[75vh]" onClick={handleContainerClick}>
               <canvas
                 ref={canvasRef}
                 width={canvasSize}
                 height={canvasSize}
-                className="max-w-full max-h-[70vh] rounded-full shadow-2xl"
+                className="max-w-full max-h-[62vh] sm:max-h-[70vh] rounded-full shadow-2xl object-contain"
               />
               
               {!isSpinning && !showCard && validWords.length > 0 && (
                 <button
                   onClick={(e) => { e.stopPropagation(); spin(); }}
-                  className="absolute inset-0 m-auto w-24 h-24 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xl rounded-full shadow-2xl flex items-center justify-center border-4 border-white transition transform hover:scale-105"
+                  className="absolute inset-0 m-auto w-16 h-16 sm:w-24 sm:h-24 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm sm:text-xl rounded-full shadow-2xl flex items-center justify-center border-2 sm:border-4 border-white transition transform hover:scale-105"
                 >
                   SPIN
                 </button>
@@ -1594,7 +1603,7 @@
               {!isSpinning && !showCard && validWords.length === 0 && (
                 <button
                   onClick={(e) => { e.stopPropagation(); setRemovedWordIds(new Set()); }}
-                  className="absolute inset-0 m-auto px-6 py-3 h-auto max-w-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg rounded-2xl shadow-2xl flex items-center justify-center border-4 border-white transition transform hover:scale-105"
+                  className="absolute inset-0 m-auto px-4 py-2 sm:px-6 sm:py-3 h-auto max-w-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm sm:text-lg rounded-xl sm:rounded-2xl shadow-2xl flex items-center justify-center border-2 sm:border-4 border-white transition transform hover:scale-105"
                 >
                   🔄 Reiniciar Ruleta
                 </button>
@@ -1604,7 +1613,7 @@
             {/* Result Modal Card overlay when wheel stops */}
             {showCard && selectedWord && (
               <div 
-                className={`fixed inset-0 z-50 flex flex-col items-center justify-between p-6 select-none transition-colors duration-300 ${
+                className={`fixed inset-0 z-50 flex flex-col items-center justify-between p-3 sm:p-6 select-none transition-colors duration-300 overflow-y-auto max-h-screen ${
                   isWhiteBg ? 'bg-white text-gray-900' : 'bg-black/90 backdrop-blur-md text-white'
                 }`}
                 onClick={() => !isSpellingSequence && voiceMode === 'idle' && setShowCard(false)}
@@ -1612,54 +1621,55 @@
                 {/* Full Screen Error Red X Overlay */}
                 {showRedX && (
                   <div className="fixed inset-0 z-50 bg-red-950/90 flex flex-col items-center justify-center animate-shake pointer-events-none">
-                    <div className="text-red-500 text-9xl font-black drop-shadow-[0_0_60px_rgba(239,68,68,0.9)]">
+                    <div className="text-red-500 text-7xl sm:text-9xl font-black drop-shadow-[0_0_60px_rgba(239,68,68,0.9)]">
                       ✕
                     </div>
-                    <p className="text-white text-3xl font-extrabold mt-6 uppercase tracking-widest drop-shadow">
+                    <p className="text-white text-2xl sm:text-3xl font-extrabold mt-4 sm:mt-6 uppercase tracking-widest drop-shadow">
                       ¡Incorrecto!
                     </p>
                   </div>
                 )}
 
                 {/* Top Bar with Close, Background, Sound, and Letter Control Buttons */}
-                <div className="relative w-full flex justify-between items-start">
-                  <div className="text-yellow-400 font-bold text-sm sm:text-base z-10">
+                <div className="relative w-full flex justify-between items-start flex-shrink-0">
+                  <div className="text-yellow-400 font-bold text-xs sm:text-base z-10 max-w-[40%] sm:max-w-none">
                     {voiceInstruction && (
-                      <span className="bg-gray-800/80 px-4 py-2 rounded-full border border-yellow-500/40 animate-pulse text-yellow-300">
+                      <span className="bg-gray-800/80 px-2 sm:px-4 py-1 sm:py-2 rounded-full border border-yellow-500/40 animate-pulse text-yellow-300 text-xs sm:text-sm inline-block truncate">
                         {voiceInstruction}
                       </span>
                     )}
                   </div>
 
                   <div className="absolute left-1/2 -translate-x-1/2 top-0 pointer-events-none z-0 flex justify-center items-center w-auto">
-                    <h1 className={`font-bubble text-4xl sm:text-6xl font-black tracking-widest drop-shadow-md transition-colors duration-300 whitespace-nowrap ${isWhiteBg ? 'text-black' : 'text-white'}`}>
+                    <h1 className={`font-bubble text-2xl xs:text-3xl sm:text-5xl md:text-6xl font-black tracking-wider sm:tracking-widest drop-shadow-md transition-colors duration-300 whitespace-nowrap ${isWhiteBg ? 'text-black' : 'text-white'}`}>
                       FOOTPRINTS
                     </h1>
                   </div>
 
-                  <div className="flex items-start space-x-2 z-10 justify-end ml-auto">
-                    <div className="flex flex-col items-end space-y-1.5">
+                  <div className="flex items-start space-x-1.5 sm:space-x-2 z-10 justify-end ml-auto">
+                    <div className="flex flex-col items-end space-y-1 sm:space-y-1.5">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setIsWhiteBg(!isWhiteBg);
                         }}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition border flex items-center space-x-1.5 ${
+                        className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold shadow-sm sm:shadow-md transition border flex items-center space-x-1 sm:space-x-1.5 ${
                           isWhiteBg
                             ? 'bg-gray-800 text-white border-gray-600 hover:bg-gray-700'
                             : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
                         }`}
                         title="Cambiar color de fondo a blanco / oscuro"
                       >
-                        <span className={`w-3 h-3 rounded-full border ${isWhiteBg ? 'bg-gray-900 border-gray-400' : 'bg-white border-gray-400'}`}></span>
-                        <span>{isWhiteBg ? 'Fondo Oscuro' : 'Fondo Blanco'}</span>
+                        <span className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border ${isWhiteBg ? 'bg-gray-900 border-gray-400' : 'bg-white border-gray-400'}`}></span>
+                        <span className="hidden xs:inline">{isWhiteBg ? 'Fondo Oscuro' : 'Fondo Blanco'}</span>
+                        <span className="xs:hidden">{isWhiteBg ? 'Oscuro' : 'Blanco'}</span>
                       </button>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setIsMuted(!isMuted);
                         }}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition border flex items-center space-x-1.5 ${
+                        className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold shadow-sm sm:shadow-md transition border flex items-center space-x-1 sm:space-x-1.5 ${
                           isMuted
                             ? 'bg-rose-600 text-white border-rose-500 hover:bg-rose-700'
                             : isWhiteBg
@@ -1669,14 +1679,14 @@
                         title="Eliminar o activar sonido"
                       >
                         <span>{isMuted ? '🔇' : '🔊'}</span>
-                        <span>{isMuted ? 'Sin Sonido' : 'Con Sonido'}</span>
+                        <span className="hidden xs:inline">{isMuted ? 'Sin Sonido' : 'Con Sonido'}</span>
                       </button>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setHideLetters(!hideLetters);
                         }}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition border flex items-center space-x-1.5 ${
+                        className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold shadow-sm sm:shadow-md transition border flex items-center space-x-1 sm:space-x-1.5 ${
                           hideLetters
                             ? 'bg-amber-600 text-white border-amber-500 hover:bg-amber-700'
                             : isWhiteBg
@@ -1686,12 +1696,12 @@
                         title="Eliminar o mostrar letras"
                       >
                         <span>{hideLetters ? '🙈' : '🔤'}</span>
-                        <span>{hideLetters ? 'Sin Letras' : 'Con Letras'}</span>
+                        <span className="hidden xs:inline">{hideLetters ? 'Sin Letras' : 'Con Letras'}</span>
                       </button>
                     </div>
                     <button
                       onClick={(e) => { e.stopPropagation(); if (!isSpellingSequence && voiceMode === 'idle') setShowCard(false); }}
-                      className={`${isWhiteBg ? 'text-gray-700 hover:text-black' : 'text-white/70 hover:text-white'} text-3xl font-bold p-2 transition`}
+                      className={`${isWhiteBg ? 'text-gray-700 hover:text-black' : 'text-white/70 hover:text-white'} text-2xl sm:text-3xl font-bold p-1 sm:p-2 transition`}
                       title="Cerrar"
                     >
                       ✕
@@ -1700,7 +1710,7 @@
                 </div>
 
                 {/* Center Word Display with dynamic letter color & scale animation or hidden letters */}
-                <div className="text-center px-4 max-w-full my-auto flex flex-col items-center justify-center flex-1 w-full overflow-hidden">
+                <div className="text-center px-2 sm:px-4 max-w-full my-auto flex flex-col items-center justify-center flex-1 w-full overflow-hidden">
                   {/* Ilustración de la Palabra Seleccionada en el Modal */}
                   {selectedWord.imageUrl && (
                     <img 
@@ -1710,13 +1720,13 @@
                         e.stopPropagation();
                         if (!isSpellingSequence && !isSpeakingWholeWord && voiceMode === 'idle') playImageSound();
                       }}
-                      className="w-full max-w-5xl h-auto max-h-[62vh] sm:max-h-[68vh] object-contain mb-2 filter drop-shadow-2xl cursor-pointer hover:scale-[1.03] transition transform"
+                      className="w-full max-w-5xl h-auto max-h-[46vh] xs:max-h-[50vh] sm:max-h-[58vh] md:max-h-[64vh] object-contain mb-2 filter drop-shadow-2xl cursor-pointer hover:scale-[1.02] transition transform"
                       title="Presiona para escuchar"
                     />
                   )}
 
                   {showRedX || voiceMode === 'error' ? (
-                    <div className="h-32 sm:h-48 flex items-center justify-center text-red-500 text-3xl font-bold">
+                    <div className="h-20 sm:h-32 flex items-center justify-center text-red-500 text-2xl sm:text-3xl font-bold">
                       {/* Hidden word when incorrect */}
                     </div>
                   ) : hideLetters ? (
@@ -1725,14 +1735,14 @@
                         e.stopPropagation();
                         if (!isSpellingSequence && !isSpeakingWholeWord && voiceMode === 'idle') playImageSound();
                       }}
-                      className="h-16 sm:h-24 flex items-center justify-center cursor-pointer my-2"
+                      className="h-12 sm:h-20 flex items-center justify-center cursor-pointer my-1 sm:my-2"
                       title="Presiona para escuchar"
                     >
-                      <div className="flex gap-2 sm:gap-3">
+                      <div className="flex gap-1.5 sm:gap-3 flex-wrap justify-center">
                         {selectedWord.text.split('').map((_, idx) => (
                           <span 
                             key={idx} 
-                            className={`inline-block w-6 sm:w-10 h-2 sm:h-3 rounded-full transition-all duration-300 ${
+                            className={`inline-block w-4 sm:w-8 md:w-10 h-1.5 sm:h-2.5 rounded-full transition-all duration-300 ${
                               completedLetterIndices.includes(idx)
                                 ? 'bg-fuchsia-500 scale-125'
                                 : activeLetterIndex === idx
@@ -1751,8 +1761,8 @@
                         e.stopPropagation();
                         if (!isSpellingSequence && !isSpeakingWholeWord && voiceMode === 'idle') playImageSound();
                       }}
-                      className={`text-[12vw] sm:text-[12vw] leading-none font-black drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)] tracking-wider uppercase transform transition-all duration-300 cursor-pointer break-words flex flex-wrap justify-center gap-1 sm:gap-3 ${
-                        isSpeakingWholeWord || isInitialWordCorrect || isFinalWordCorrect ? 'scale-110 sm:scale-125' : ''
+                      className={`text-[10vw] sm:text-[9vw] md:text-[8vw] lg:text-[7vw] leading-none font-black drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)] tracking-wider uppercase transform transition-all duration-300 cursor-pointer break-words flex flex-wrap justify-center gap-1 sm:gap-2 md:gap-3 ${
+                        isSpeakingWholeWord || isInitialWordCorrect || isFinalWordCorrect ? 'scale-105 sm:scale-115' : ''
                       }`}
                       title="Presiona para escuchar"
                     >
@@ -1767,11 +1777,11 @@
                                 : isInitialWordCorrect
                                 ? 'text-emerald-400 scale-125 drop-shadow-[0_0_35px_rgba(52,211,153,1)]'
                                 : isSpelledInVoice
-                                ? 'text-fuchsia-500 scale-125 -translate-y-2 font-black drop-shadow-[0_0_30px_rgba(232,121,249,1)]'
+                                ? 'text-fuchsia-500 scale-125 -translate-y-1 sm:-translate-y-2 font-black drop-shadow-[0_0_30px_rgba(232,121,249,1)]'
                                 : isSpeakingWholeWord
                                 ? (isWhiteBg ? 'text-indigo-600 drop-shadow-[0_0_25px_rgba(79,70,229,0.5)]' : 'text-cyan-300 drop-shadow-[0_0_35px_rgba(34,211,238,1)]')
                                 : activeLetterIndex === idx
-                                ? 'text-pink-500 scale-150 -translate-y-4 font-black drop-shadow-[0_0_35px_rgba(244,114,182,1)] z-20'
+                                ? 'text-pink-500 scale-135 -translate-y-2 sm:-translate-y-4 font-black drop-shadow-[0_0_35px_rgba(244,114,182,1)] z-20'
                                 : (isWhiteBg ? 'text-indigo-950 hover:scale-110 drop-shadow-sm' : 'text-yellow-300 hover:scale-110')
                             }`}
                           >
@@ -1784,26 +1794,26 @@
 
                   {/* Transcripts Display (3 Separated Lines) */}
                   {(voiceMode !== 'idle' || initialWordTranscript || spellingLettersTranscript.length > 0 || finalWordTranscript) && (
-                    <div className={`mt-4 w-full max-w-xl rounded-2xl p-4 text-left shadow-xl space-y-2 text-sm sm:text-base border ${
+                    <div className={`mt-2 sm:mt-4 w-full max-w-xl rounded-xl sm:rounded-2xl p-2.5 sm:p-4 text-left shadow-lg space-y-1 sm:space-y-2 text-xs sm:text-sm md:text-base border ${
                       isWhiteBg
                         ? 'bg-gray-100 border-gray-300 text-gray-800'
                         : 'bg-gray-900/90 border-gray-700/80 text-white'
                     }`}>
                       {/* Line 1: Spoken initial word */}
                       <div className="flex items-center space-x-2">
-                        <span className="font-bold text-emerald-500 min-w-[125px]">1. Palabra inicial:</span>
-                        <span className={`font-medium px-2.5 py-0.5 rounded border truncate ${isWhiteBg ? 'bg-white text-gray-900 border-gray-300' : 'bg-gray-800 text-white border-gray-700'}`}>
+                        <span className="font-bold text-emerald-500 min-w-[105px] sm:min-w-[125px]">1. Palabra inicial:</span>
+                        <span className={`font-medium px-2 py-0.5 rounded border truncate ${isWhiteBg ? 'bg-white text-gray-900 border-gray-300' : 'bg-gray-800 text-white border-gray-700'}`}>
                           {initialWordTranscript || (voiceMode === 'initial_listen' ? 'Escuchando...' : '—')}
                         </span>
                       </div>
 
                       {/* Line 2: Spoken letters sequence */}
                       <div className="flex items-start space-x-2">
-                        <span className="font-bold text-fuchsia-500 min-w-[125px]">2. Letras oídas:</span>
+                        <span className="font-bold text-fuchsia-500 min-w-[105px] sm:min-w-[125px]">2. Letras oídas:</span>
                         <div className="flex-1 flex flex-wrap gap-1">
                           {spellingLettersTranscript.length > 0 ? (
                             spellingLettersTranscript.map((letter, idx) => (
-                              <span key={idx} className="bg-fuchsia-950 text-fuchsia-200 border border-fuchsia-700 font-bold px-2 py-0.5 rounded text-xs sm:text-sm">
+                              <span key={idx} className="bg-fuchsia-950 text-fuchsia-200 border border-fuchsia-700 font-bold px-1.5 sm:px-2 py-0.5 rounded text-[11px] sm:text-xs">
                                 {letter}
                               </span>
                             ))
@@ -1815,15 +1825,15 @@
 
                       {/* Line 3: Spoken final word */}
                       <div className="flex items-center space-x-2">
-                        <span className="font-bold text-amber-500 min-w-[125px]">3. Palabra final:</span>
-                        <span className={`font-medium px-2.5 py-0.5 rounded border truncate ${isWhiteBg ? 'bg-white text-gray-900 border-gray-300' : 'bg-gray-800 text-white border-gray-700'}`}>
+                        <span className="font-bold text-amber-500 min-w-[105px] sm:min-w-[125px]">3. Palabra final:</span>
+                        <span className={`font-medium px-2 py-0.5 rounded border truncate ${isWhiteBg ? 'bg-white text-gray-900 border-gray-300' : 'bg-gray-800 text-white border-gray-700'}`}>
                           {finalWordTranscript || (voiceMode === 'final_listen' ? 'Escuchando...' : '—')}
                         </span>
                       </div>
                     </div>
                   )}
 
-                  <p className={`mt-4 text-sm sm:text-xl font-medium animate-pulse ${isWhiteBg ? 'text-gray-700' : 'text-white/70'}`}>
+                  <p className={`mt-2 sm:mt-3 text-xs sm:text-base md:text-lg font-medium animate-pulse ${isWhiteBg ? 'text-gray-700' : 'text-white/70'}`}>
                     {voiceMode !== 'idle'
                       ? voiceInstruction
                       : isSpeakingWholeWord
@@ -1833,7 +1843,7 @@
                 </div>
 
                 {/* Bottom Action Buttons */}
-                <div className="w-full max-w-2xl flex flex-wrap items-center justify-center gap-2 sm:gap-4 pb-4">
+                <div className="w-full max-w-2xl flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 pb-2 pt-1 flex-shrink-0">
                   {/* Microphone Voice Challenge Button */}
                   <button
                     onClick={(e) => {
@@ -1841,15 +1851,15 @@
                       handleVoiceChallenge();
                     }}
                     disabled={isSpellingSequence || voiceMode !== 'idle'}
-                    className={`p-4 rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center space-x-2 shadow-2xl transition transform active:scale-95 ${
+                    className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base flex items-center justify-center space-x-1.5 sm:space-x-2 shadow-xl transition transform active:scale-95 ${
                       voiceMode !== 'idle'
                         ? 'bg-rose-600 text-white animate-pulse ring-4 ring-rose-400'
                         : 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-400 hover:to-pink-500 text-white hover:scale-105'
                     }`}
                     title="Desafío de voz con micrófono"
                   >
-                    <MicrophoneIcon className="h-7 w-7" />
-                    <span className="hidden sm:inline">Mic</span>
+                    <MicrophoneIcon className="h-5 w-5 sm:h-7 sm:w-7" />
+                    <span className="hidden xs:inline">Mic</span>
                   </button>
 
                   {/* Play Recorded Voice Audio Button */}
@@ -1857,15 +1867,15 @@
                     <button
                       onClick={playRecordedAudio}
                       disabled={isSpellingSequence || voiceMode !== 'idle'}
-                      className={`p-4 rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center space-x-2 shadow-2xl transition transform active:scale-95 ${
+                      className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base flex items-center justify-center space-x-1.5 sm:space-x-2 shadow-xl transition transform active:scale-95 ${
                         isPlayingRecording
                           ? 'bg-cyan-500 text-white ring-4 ring-cyan-300 animate-pulse'
                           : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white hover:scale-105'
                       }`}
                       title="Reproducir mi voz grabada"
                     >
-                      <SpeakerWaveIcon className="h-7 w-7" />
-                      <span className="hidden sm:inline">Mi Grabación</span>
+                      <SpeakerWaveIcon className="h-5 w-5 sm:h-7 sm:w-7" />
+                      <span className="hidden xs:inline">Mi Voz</span>
                     </button>
                   )}
 
@@ -1873,13 +1883,13 @@
                   <button
                     onClick={handleSpellWordSequence}
                     disabled={isSpellingSequence || voiceMode !== 'idle'}
-                    className={`flex-1 py-4 px-4 sm:px-6 rounded-2xl font-bold text-base sm:text-xl flex items-center justify-center space-x-2 sm:space-x-3 shadow-2xl transition transform active:scale-95 ${
+                    className={`flex-1 py-2.5 sm:py-4 px-3 sm:px-5 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-base md:text-lg flex items-center justify-center space-x-1.5 sm:space-x-2 shadow-xl transition transform active:scale-95 ${
                       isSpellingSequence
                         ? 'bg-pink-600 text-white animate-pulse'
                         : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white hover:scale-105'
                     }`}
                   >
-                    <span className="text-2xl">🔤</span>
+                    <span className="text-base sm:text-2xl">🔤</span>
                     <span>Spell a word</span>
                   </button>
 
@@ -1893,9 +1903,9 @@
                       }
                     }}
                     disabled={isSpellingSequence || voiceMode !== 'idle'}
-                    className="flex-1 py-4 px-4 sm:px-6 rounded-2xl font-bold text-base sm:text-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white flex items-center justify-center space-x-2 sm:space-x-3 shadow-2xl transition transform hover:scale-105 active:scale-95 disabled:opacity-50"
+                    className="flex-1 py-2.5 sm:py-4 px-3 sm:px-5 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-base md:text-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white flex items-center justify-center space-x-1.5 sm:space-x-2 shadow-xl transition transform hover:scale-105 active:scale-95 disabled:opacity-50"
                   >
-                    <span className="text-2xl">🎯</span>
+                    <span className="text-base sm:text-2xl">🎯</span>
                     <span>Girar de nuevo</span>
                   </button>
                 </div>
@@ -1932,7 +1942,7 @@
         const [settings, setSettings] = useState({
           courseName: 'My Spelling Bee',
           voice: '',
-          rate: 0.7,
+          rate: 0.8,
           pitch: 1,
           generateImages: true,
           dictationMode: false,
@@ -2142,22 +2152,22 @@
 
         return (
           <div className="min-h-screen font-sans">
-            <header className="bg-white dark:bg-gray-800 shadow-md p-4 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
+            <header className="bg-white dark:bg-gray-800 shadow-md p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center space-x-3 sm:space-x-4">
                 {logo ? (
-                  <img src={logo} alt="Logo" className="h-10 w-auto" />
+                  <img src={logo} alt="Logo" className="h-8 sm:h-10 w-auto" />
                 ) : (
-                  <div className="text-2xl font-black text-indigo-600">🐝</div>
+                  <div className="text-xl sm:text-2xl font-black text-indigo-600">🐝</div>
                 )}
                 <div>
-                  <h1 className="text-xl font-bold text-gray-800 dark:text-white">{settings.courseName}</h1>
-                  <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400">Spelling Bee Helper</h2>
+                  <h1 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">{settings.courseName}</h1>
+                  <h2 className="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400">Spelling Bee Helper</h2>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 <button
                   onClick={() => setIsWhiteBg(!isWhiteBg)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-bold shadow-sm transition border flex items-center space-x-1.5 ${
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-bold shadow-sm transition border flex items-center space-x-1 sm:space-x-1.5 ${
                     isWhiteBg
                       ? 'bg-gray-800 text-white border-gray-600 hover:bg-gray-700'
                       : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
@@ -2165,23 +2175,25 @@
                   title="Cambiar color de fondo a blanco / oscuro"
                 >
                   <span className={`w-2.5 h-2.5 rounded-full border ${isWhiteBg ? 'bg-gray-900 border-gray-300' : 'bg-white border-gray-400'}`}></span>
-                  <span>{isWhiteBg ? 'Fondo Oscuro' : 'Fondo Blanco'}</span>
+                  <span className="hidden xs:inline">{isWhiteBg ? 'Fondo Oscuro' : 'Fondo Blanco'}</span>
+                  <span className="xs:hidden">{isWhiteBg ? 'Oscuro' : 'Blanco'}</span>
                 </button>
                 <button
                   onClick={() => setGameMode('wheel')}
                   disabled={words.filter(w => w.status !== WordStatus.FAILED).length === 0}
-                  className="px-4 py-2 bg-green-500 text-white rounded-md font-semibold hover:bg-green-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center space-x-2"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-500 text-white rounded-md font-semibold hover:bg-green-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm"
                 >
-                  <PlayIcon className="h-5 w-5" />
+                  <PlayIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                   <span>Play Wheel</span>
                 </button>
                 <button
                   onClick={handleDownload}
                   disabled={words.filter(w => w.status === WordStatus.COMPLETED).length === 0}
-                  className="px-4 py-2 bg-sky-500 text-white rounded-md font-semibold hover:bg-sky-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center space-x-2"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-sky-500 text-white rounded-md font-semibold hover:bg-sky-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm"
                 >
-                  <DownloadIcon className="h-5 w-5" />
-                  <span>Download ZIP</span>
+                  <DownloadIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden xs:inline">Download ZIP</span>
+                  <span className="xs:hidden">ZIP</span>
                 </button>
               </div>
             </header>
