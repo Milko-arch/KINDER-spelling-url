@@ -1706,6 +1706,11 @@
               )}
             </div>
 
+            {/* Footer credit */}
+            <footer className={`w-full text-center text-[11px] sm:text-xs py-1.5 font-medium transition-colors ${isWhiteBg ? 'text-gray-500' : 'text-gray-400'}`}>
+              By: Ing. Milko Gonzales C.
+            </footer>
+
             {/* Result Modal Card overlay when wheel stops */}
             {showCard && selectedWord && (
               <div 
@@ -2382,6 +2387,11 @@
               <div className="my-1 sm:mt-6 text-center text-[11px] sm:text-sm text-gray-600 font-semibold flex-shrink-0">
                 Correct answers: <span className="text-emerald-600 font-black">{correctAnswers}</span> of {currentIndex + (isAnswered ? 1 : 0)}
               </div>
+
+              {/* Footer credit */}
+              <footer className="w-full text-center text-[11px] sm:text-xs text-gray-500 font-medium py-1 flex-shrink-0">
+                By: Ing. Milko Gonzales C.
+              </footer>
             </div>
           </div>
         );
@@ -2898,6 +2908,11 @@
                 isGenerating={isGenerating}
               />
             </div>
+
+            {/* Footer credit */}
+            <footer className="w-full text-center py-6 mt-8 border-t border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 text-xs sm:text-sm font-semibold tracking-wide">
+              By: Ing. Milko Gonzales C.
+            </footer>
 
             {gameMode === 'wheel' && (
               <SpinningWheel
