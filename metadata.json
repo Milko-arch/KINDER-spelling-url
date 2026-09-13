@@ -1,0 +1,6 @@
+{
+  "name": "Spelling Bee Helper",
+  "description": "A spelling bee helper and interactive spinning wheel practice application.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

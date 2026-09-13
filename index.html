@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Spelling Bee Helper</title>
+    <meta name="description" content="A spelling bee helper and interactive spinning wheel practice application." />
+    <meta property="og:title" content="Spelling Bee Helper" />
+    <meta property="og:description" content="A spelling bee helper and interactive spinning wheel practice application." />
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -39,10 +42,10 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       }
     </script>
-    <!-- Bubble Font from Google Fonts -->
+    <!-- Bubble and Diploma Fonts from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Cinzel:wght@600;700;800;900&family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&display=swap" rel="stylesheet">
     <style>
       @font-face {
         font-family: 'Kiddy Bubble';
@@ -57,6 +60,15 @@
       .font-bubble {
         font-family: 'Kiddy Bubble', 'Bubblegum Sans', cursive, system-ui, sans-serif;
       }
+      .font-cinzel {
+        font-family: 'Cinzel', serif;
+      }
+      .font-playfair {
+        font-family: 'Playfair Display', Georgia, serif;
+      }
+      .font-signature {
+        font-family: 'Great Vibes', 'Brush Script MT', cursive;
+      }
       ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -68,9 +80,39 @@
         background: rgba(100, 100, 100, 0.3);
         border-radius: 4px;
       }
+      @media print {
+        body {
+          background: #ffffff !important;
+          color: #000000 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+        #diploma-wrapper {
+          position: absolute !important;
+          left: 0 !important;
+          top: 0 !important;
+          width: 100vw !important;
+          min-height: 100vh !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background: #ffffff !important;
+          box-shadow: none !important;
+        }
+        #diploma-card {
+          border-width: 4px !important;
+          box-shadow: none !important;
+          margin: 0 auto !important;
+          page-break-inside: avoid !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+      }
     </style>
   </head>
-  <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <body class="bg-white text-gray-900">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -688,13 +730,13 @@
                 alt={word.text}
                 onClick={handleImageClick}
                 className="w-32 h-32 sm:w-40 sm:h-40 object-contain flex-shrink-0 cursor-pointer hover:opacity-80 transition transform hover:scale-105 filter drop-shadow-md"
-                title="Presiona para escuchar"
+                title="Click to listen"
               />
             ) : (
               <div
                 onClick={handleImageClick}
                 className="w-32 h-32 sm:w-40 sm:h-40 rounded-md bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold text-base flex items-center justify-center p-1 text-center flex-shrink-0 cursor-pointer hover:opacity-80 transition transform hover:scale-105 border border-indigo-200 dark:border-indigo-700 overflow-hidden leading-tight"
-                title="Presiona para escuchar"
+                title="Click to listen"
               >
                 {word.text}
               </div>
@@ -703,7 +745,7 @@
               <p
                 onClick={playAudio}
                 className="text-lg font-bold text-gray-900 dark:text-white truncate cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition"
-                title="Presiona para escuchar"
+                title="Click to listen"
               >
                 {word.text}
               </p>
@@ -814,13 +856,13 @@
                   alt={word.text} 
                   onClick={() => onPronounce(word.text)}
                   className="w-full max-w-xl h-auto max-h-[60vh] object-contain mx-auto mb-4 cursor-pointer hover:opacity-80 transition transform hover:scale-105 filter drop-shadow-xl" 
-                  title="Presiona para escuchar"
+                  title="Click to listen"
                 />
               ) : (
                 <div 
                   onClick={() => onPronounce(word.text)}
                   className="w-full max-w-xl h-64 sm:h-80 mx-auto rounded-xl mb-4 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-black text-3xl flex items-center justify-center p-3 text-center cursor-pointer hover:opacity-80 transition transform hover:scale-105 border-2 border-indigo-300 dark:border-indigo-600 break-words" 
-                  title="Presiona para escuchar"
+                  title="Click to listen"
                 >
                   {word.text}
                 </div>
@@ -849,7 +891,7 @@
         );
       };
 
-      const SpinningWheel = ({ words, onClose, background, logo, onOpenSpellingBee, onSpeak, isWhiteBg, setIsWhiteBg, isMuted, setIsMuted, hideLetters, setHideLetters }) => {
+      const SpinningWheel = ({ words, onClose, background, logo, onOpenSpellingBee, onSpeak, isWhiteBg, setIsWhiteBg, isMuted, setIsMuted, hideLetters, setHideLetters, onStartQuiz }) => {
         const canvasRef = useRef(null);
         const [selectedWord, setSelectedWord] = useState(null);
         const [isSpinning, setIsSpinning] = useState(false);
@@ -942,7 +984,7 @@
           playErrorTone();
           setShowRedX(true);
           setVoiceMode('error');
-          setVoiceInstruction('¡Incorrecto!');
+          setVoiceInstruction('Incorrect!');
           setTimeout(() => {
             setShowRedX(false);
             setVoiceMode('idle');
@@ -976,10 +1018,10 @@
             't': 't', 'tee': 't', 'tea': 't', 'ti': 't',
             'u': 'u', 'you': 'u', 'yu': 'u',
             'v': 'v', 'vee': 'v', 'vi': 'v',
-            'w': 'w', 'double u': 'w', 'doubleyou': 'w',
+            'w': 'w', 'doubleyou': 'w', 'double u': 'w',
             'x': 'x', 'ex': 'x',
             'y': 'y', 'why': 'y', 'wai': 'y',
-            'z': 'z', 'zed': 'z', 'zee': 'z'
+            'z': 'z', 'zee': 'z', 'zed': 'z'
           };
           return letterMap[clean] || (clean.length === 1 ? clean : clean.charAt(0));
         };
@@ -987,7 +1029,7 @@
         const handleVoiceChallenge = async () => {
           const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
           if (!SpeechRecognition) {
-            alert('El reconocimiento de voz no está soportado en este navegador. Utiliza Google Chrome o Edge.');
+            alert('Speech recognition is not supported in this browser. Please use Google Chrome or Edge.');
             return;
           }
 
@@ -1036,7 +1078,7 @@
           setCompletedLetterIndices([]);
           setIsInitialWordCorrect(false);
           setIsFinalWordCorrect(false);
-          setVoiceInstruction(`🎤 Paso 1 de 3: Pronuncia la palabra completa "${selectedWord.text.toUpperCase()}"`);
+          setVoiceInstruction(`🎤 Step 1 of 3: Say the full word "${selectedWord.text.toUpperCase()}"`);
 
           const isWordMatch = (spoken, target) => {
             if (!spoken || !target) return false;
@@ -1078,7 +1120,7 @@
                     setIsInitialWordCorrect(true);
                     currentStage = 'spelling';
                     setVoiceMode('spelling');
-                    setVoiceInstruction(`🔤 Paso 2 de 3: Deletrea la letra 1 de ${wordLength} (${targetWord[0].toUpperCase()})...`);
+                    setVoiceInstruction(`🔤 Step 2 of 3: Spell letter 1 of ${wordLength} (${targetWord[0].toUpperCase()})...`);
                     setTimeout(() => {
                       setIsInitialWordCorrect(false);
                       startRecognitionForStage('spelling');
@@ -1107,14 +1149,14 @@
                       if (letterPointer === wordLength) {
                         currentStage = 'final_listen';
                         setVoiceMode('final_listen');
-                        setVoiceInstruction(`🎤 Paso 3 de 3: ¡Muy bien! Pronuncia la palabra completa "${selectedWord.text.toUpperCase()}" nuevamente...`);
+                        setVoiceInstruction(`🎤 Step 3 of 3: Great job! Say the full word "${selectedWord.text.toUpperCase()}" again...`);
                         setTimeout(() => {
                           startRecognitionForStage('final_listen');
                         }, 800);
                         return;
                       } else {
                         const nextLetter = targetWord[letterPointer].toUpperCase();
-                        setVoiceInstruction(`🔤 Paso 2 de 3: Deletrea la letra ${letterPointer + 1} de ${wordLength} (${nextLetter})...`);
+                        setVoiceInstruction(`🔤 Step 2 of 3: Spell letter ${letterPointer + 1} of ${wordLength} (${nextLetter})...`);
                       }
                     } else {
                       triggerVoiceError();
@@ -1128,7 +1170,7 @@
                     playPositiveChime();
                     setIsFinalWordCorrect(true);
                     setVoiceMode('completed');
-                    setVoiceInstruction('🎉 ¡Excelente trabajo! Verificación completa.');
+                    setVoiceInstruction('🎉 Great job! Verification completed.');
                     stopAudioRecording();
                     try { rec.stop(); } catch (e) {}
                     setTimeout(() => {
@@ -1549,13 +1591,22 @@
               </div>
 
               <div className="flex items-center sm:items-start space-x-1.5 sm:space-x-2 z-10 justify-end ml-auto flex-shrink-0">
+                <button
+                  onClick={onStartQuiz}
+                  className="bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-gray-950 text-[10px] sm:text-xs font-black px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl shadow-md transition flex items-center space-x-1 sm:space-x-1.5 border border-amber-300"
+                  title="Go to Unit 2: Listening & Picture Quiz"
+                >
+                  <span>🎧</span>
+                  <span className="hidden xs:inline">Unit 2: Quiz</span>
+                  <span className="xs:hidden">U2</span>
+                </button>
                 {removedWordIds.size > 0 && (
                   <button
                     onClick={() => setRemovedWordIds(new Set())}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl shadow transition"
-                    title="Restablecer palabras en la ruleta"
+                    title="Reset words on the wheel"
                   >
-                    🔄 <span className="hidden xs:inline">Restablecer</span> ({removedWordIds.size})
+                    🔄 <span className="hidden xs:inline">Reset</span> ({removedWordIds.size})
                   </button>
                 )}
                 <div className="flex flex-col items-end space-y-1 sm:space-y-1.5">
@@ -1566,11 +1617,11 @@
                         ? 'bg-gray-800 text-white border-gray-600 hover:bg-gray-700'
                         : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
                     }`}
-                    title="Cambiar color de fondo a blanco / oscuro"
+                    title="Switch background color to white / dark"
                   >
                     <span className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border ${isWhiteBg ? 'bg-gray-900 border-gray-400' : 'bg-white border-gray-400'}`}></span>
-                    <span className="hidden xs:inline">{isWhiteBg ? 'Fondo Oscuro' : 'Fondo Blanco'}</span>
-                    <span className="xs:hidden">{isWhiteBg ? 'Oscuro' : 'Blanco'}</span>
+                    <span className="hidden xs:inline">{isWhiteBg ? 'Dark Mode' : 'White Mode'}</span>
+                    <span className="xs:hidden">{isWhiteBg ? 'Dark' : 'White'}</span>
                   </button>
                   <button
                     onClick={() => setIsMuted(!isMuted)}
@@ -1581,10 +1632,10 @@
                         ? 'bg-gray-800 text-white border-gray-600 hover:bg-gray-700'
                         : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
                     }`}
-                    title="Eliminar o activar sonido"
+                    title="Toggle sound"
                   >
                     <span>{isMuted ? '🔇' : '🔊'}</span>
-                    <span className="hidden xs:inline">{isMuted ? 'Sin Sonido' : 'Con Sonido'}</span>
+                    <span className="hidden xs:inline">{isMuted ? 'Muted' : 'Sound On'}</span>
                   </button>
                   <button
                     onClick={() => setHideLetters(!hideLetters)}
@@ -1595,10 +1646,10 @@
                         ? 'bg-gray-800 text-white border-gray-600 hover:bg-gray-700'
                         : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
                     }`}
-                    title="Eliminar o mostrar letras"
+                    title="Toggle letter visibility"
                   >
                     <span>{hideLetters ? '🙈' : '🔤'}</span>
-                    <span className="hidden xs:inline">{hideLetters ? 'Sin Letras' : 'Con Letras'}</span>
+                    <span className="hidden xs:inline">{hideLetters ? 'Hide Letters' : 'Show Letters'}</span>
                   </button>
                 </div>
                 <button
@@ -1630,12 +1681,28 @@
               )}
 
               {!isSpinning && !showCard && validWords.length === 0 && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); setRemovedWordIds(new Set()); }}
-                  className="absolute inset-0 m-auto px-4 py-2 sm:px-6 sm:py-3 h-auto max-w-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm sm:text-lg rounded-xl sm:rounded-2xl shadow-2xl flex items-center justify-center border-2 sm:border-4 border-white transition transform hover:scale-105"
-                >
-                  🔄 Reiniciar Ruleta
-                </button>
+                <div className="absolute inset-0 m-auto flex flex-col items-center justify-center p-4 sm:p-6 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-3xl shadow-2xl border-4 border-amber-400 max-w-sm sm:max-w-md mx-auto text-center space-y-3 z-30 pointer-events-auto">
+                  <div className="text-3xl sm:text-4xl">🎉 🐝 🏆</div>
+                  <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white">
+                    All words completed!
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium px-2">
+                    You have completed all spelling words! Advance to the next unit where you will listen to the word and choose among 3 pictures to earn your diploma!
+                  </p>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onStartQuiz(); }}
+                    className="w-full py-3 px-4 sm:px-6 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-600 hover:to-yellow-500 text-gray-950 font-black text-sm sm:text-base rounded-xl sm:rounded-2xl shadow-xl transition transform hover:scale-105 border-2 border-white flex items-center justify-center space-x-2 animate-bounce"
+                  >
+                    <span>🎧 Advance to Unit 2: Listen & Choose</span>
+                    <span>➔</span>
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setRemovedWordIds(new Set()); }}
+                    className="text-xs text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 underline font-semibold"
+                  >
+                    🔄 Reset Wheel
+                  </button>
+                </div>
               )}
             </div>
 
@@ -1654,7 +1721,7 @@
                       ✕
                     </div>
                     <p className="text-white text-2xl sm:text-3xl font-extrabold mt-4 sm:mt-6 uppercase tracking-widest drop-shadow">
-                      ¡Incorrecto!
+                      Incorrect!
                     </p>
                   </div>
                 )}
@@ -1687,11 +1754,11 @@
                             ? 'bg-gray-800 text-white border-gray-600 hover:bg-gray-700'
                             : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
                         }`}
-                        title="Cambiar color de fondo a blanco / oscuro"
+                        title="Switch background color to white / dark"
                       >
                         <span className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border ${isWhiteBg ? 'bg-gray-900 border-gray-400' : 'bg-white border-gray-400'}`}></span>
-                        <span className="hidden xs:inline">{isWhiteBg ? 'Fondo Oscuro' : 'Fondo Blanco'}</span>
-                        <span className="xs:hidden">{isWhiteBg ? 'Oscuro' : 'Blanco'}</span>
+                        <span className="hidden xs:inline">{isWhiteBg ? 'Dark Mode' : 'White Mode'}</span>
+                        <span className="xs:hidden">{isWhiteBg ? 'Dark' : 'White'}</span>
                       </button>
                       <button
                         onClick={(e) => {
@@ -1705,10 +1772,10 @@
                             ? 'bg-gray-800 text-white border-gray-600 hover:bg-gray-700'
                             : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
                         }`}
-                        title="Eliminar o activar sonido"
+                        title="Toggle sound"
                       >
                         <span>{isMuted ? '🔇' : '🔊'}</span>
-                        <span className="hidden xs:inline">{isMuted ? 'Sin Sonido' : 'Con Sonido'}</span>
+                        <span className="hidden xs:inline">{isMuted ? 'Muted' : 'Sound On'}</span>
                       </button>
                       <button
                         onClick={(e) => {
@@ -1722,16 +1789,16 @@
                             ? 'bg-gray-800 text-white border-gray-600 hover:bg-gray-700'
                             : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
                         }`}
-                        title="Eliminar o mostrar letras"
+                        title="Toggle letter visibility"
                       >
                         <span>{hideLetters ? '🙈' : '🔤'}</span>
-                        <span className="hidden xs:inline">{hideLetters ? 'Sin Letras' : 'Con Letras'}</span>
+                        <span className="hidden xs:inline">{hideLetters ? 'Hide Letters' : 'Show Letters'}</span>
                       </button>
                     </div>
                     <button
                       onClick={(e) => { e.stopPropagation(); if (!isSpellingSequence && voiceMode === 'idle') setShowCard(false); }}
                       className={`${isWhiteBg ? 'text-gray-700 hover:text-black' : 'text-white/70 hover:text-white'} text-2xl sm:text-3xl font-bold p-1 sm:p-2 transition`}
-                      title="Cerrar"
+                      title="Close"
                     >
                       ✕
                     </button>
@@ -1750,7 +1817,7 @@
                         if (!isSpellingSequence && !isSpeakingWholeWord && voiceMode === 'idle') playImageSound();
                       }}
                       className="w-full max-w-5xl h-auto max-h-[46vh] xs:max-h-[50vh] sm:max-h-[58vh] md:max-h-[64vh] object-contain mb-2 filter drop-shadow-2xl cursor-pointer hover:scale-[1.02] transition transform"
-                      title="Presiona para escuchar"
+                      title="Click to listen"
                     />
                   )}
 
@@ -1765,7 +1832,7 @@
                         if (!isSpellingSequence && !isSpeakingWholeWord && voiceMode === 'idle') playImageSound();
                       }}
                       className="h-12 sm:h-20 flex items-center justify-center cursor-pointer my-1 sm:my-2"
-                      title="Presiona para escuchar"
+                      title="Click to listen"
                     >
                       <div className="flex gap-1.5 sm:gap-3 flex-wrap justify-center">
                         {selectedWord.text.split('').map((_, idx) => (
@@ -1793,7 +1860,7 @@
                       className={`text-[10vw] sm:text-[9vw] md:text-[8vw] lg:text-[7vw] leading-none font-black drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)] tracking-wider uppercase transform transition-all duration-300 cursor-pointer break-words flex flex-wrap justify-center gap-1 sm:gap-2 md:gap-3 ${
                         isSpeakingWholeWord || isInitialWordCorrect || isFinalWordCorrect ? 'scale-105 sm:scale-115' : ''
                       }`}
-                      title="Presiona para escuchar"
+                      title="Click to listen"
                     >
                       {selectedWord.text.split('').map((char, idx) => {
                         const isSpelledInVoice = completedLetterIndices.includes(idx);
@@ -1830,15 +1897,15 @@
                     }`}>
                       {/* Line 1: Spoken initial word */}
                       <div className="flex items-center space-x-2">
-                        <span className="font-bold text-emerald-500 min-w-[105px] sm:min-w-[125px]">1. Palabra inicial:</span>
+                        <span className="font-bold text-emerald-500 min-w-[105px] sm:min-w-[125px]">1. Initial word:</span>
                         <span className={`font-medium px-2 py-0.5 rounded border truncate ${isWhiteBg ? 'bg-white text-gray-900 border-gray-300' : 'bg-gray-800 text-white border-gray-700'}`}>
-                          {initialWordTranscript || (voiceMode === 'initial_listen' ? 'Escuchando...' : '—')}
+                          {initialWordTranscript || (voiceMode === 'initial_listen' ? 'Listening...' : '—')}
                         </span>
                       </div>
 
                       {/* Line 2: Spoken letters sequence */}
                       <div className="flex items-start space-x-2">
-                        <span className="font-bold text-fuchsia-500 min-w-[105px] sm:min-w-[125px]">2. Letras oídas:</span>
+                        <span className="font-bold text-fuchsia-500 min-w-[105px] sm:min-w-[125px]">2. Spelled letters:</span>
                         <div className="flex-1 flex flex-wrap gap-1">
                           {spellingLettersTranscript.length > 0 ? (
                             spellingLettersTranscript.map((letter, idx) => (
@@ -1847,16 +1914,16 @@
                               </span>
                             ))
                           ) : (
-                            <span className="text-gray-400 italic">{voiceMode === 'spelling' ? 'Deletreando...' : '—'}</span>
+                            <span className="text-gray-400 italic">{voiceMode === 'spelling' ? 'Spelling...' : '—'}</span>
                           )}
                         </div>
                       </div>
 
                       {/* Line 3: Spoken final word */}
                       <div className="flex items-center space-x-2">
-                        <span className="font-bold text-amber-500 min-w-[105px] sm:min-w-[125px]">3. Palabra final:</span>
+                        <span className="font-bold text-amber-500 min-w-[105px] sm:min-w-[125px]">3. Final word:</span>
                         <span className={`font-medium px-2 py-0.5 rounded border truncate ${isWhiteBg ? 'bg-white text-gray-900 border-gray-300' : 'bg-gray-800 text-white border-gray-700'}`}>
-                          {finalWordTranscript || (voiceMode === 'final_listen' ? 'Escuchando...' : '—')}
+                          {finalWordTranscript || (voiceMode === 'final_listen' ? 'Listening...' : '—')}
                         </span>
                       </div>
                     </div>
@@ -1866,8 +1933,8 @@
                     {voiceMode !== 'idle'
                       ? voiceInstruction
                       : isSpeakingWholeWord
-                      ? 'Escuchando la palabra completa... 🔊'
-                      : 'Toca la palabra para escucharla 🔊'}
+                      ? 'Listening to the full word... 🔊'
+                      : 'Tap the word to listen 🔊'}
                   </p>
                 </div>
 
@@ -1885,7 +1952,7 @@
                         ? 'bg-rose-600 text-white animate-pulse ring-4 ring-rose-400'
                         : 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-400 hover:to-pink-500 text-white hover:scale-105'
                     }`}
-                    title="Desafío de voz con micrófono"
+                    title="Microphone voice challenge"
                   >
                     <MicrophoneIcon className="h-5 w-5 sm:h-7 sm:w-7" />
                     <span className="hidden xs:inline">Mic</span>
@@ -1901,10 +1968,10 @@
                           ? 'bg-cyan-500 text-white ring-4 ring-cyan-300 animate-pulse'
                           : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white hover:scale-105'
                       }`}
-                      title="Reproducir mi voz grabada"
+                      title="Play my recorded voice"
                     >
                       <SpeakerWaveIcon className="h-5 w-5 sm:h-7 sm:w-7" />
-                      <span className="hidden xs:inline">Mi Voz</span>
+                      <span className="hidden xs:inline">My Voice</span>
                     </button>
                   )}
 
@@ -1922,24 +1989,586 @@
                     <span>Spell a word</span>
                   </button>
 
-                  {/* Girar de nuevo Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!isSpellingSequence && voiceMode === 'idle') {
+                  {/* Girar de nuevo o Pasar a Unidad 2 Button */}
+                  {validWords.length === 0 ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setShowCard(false);
-                        spin();
-                      }
-                    }}
-                    disabled={isSpellingSequence || voiceMode !== 'idle'}
-                    className="flex-1 py-2.5 sm:py-4 px-3 sm:px-5 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-base md:text-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white flex items-center justify-center space-x-1.5 sm:space-x-2 shadow-xl transition transform hover:scale-105 active:scale-95 disabled:opacity-50"
-                  >
-                    <span className="text-base sm:text-2xl">🎯</span>
-                    <span>Girar de nuevo</span>
-                  </button>
+                        onStartQuiz();
+                      }}
+                      className="flex-1 py-2.5 sm:py-4 px-3 sm:px-5 rounded-xl sm:rounded-2xl font-black text-xs sm:text-base md:text-lg bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-gray-950 flex items-center justify-center space-x-1.5 sm:space-x-2 shadow-xl transition transform hover:scale-105 active:scale-95 animate-bounce border-2 border-white"
+                    >
+                      <span className="text-base sm:text-2xl">🎧</span>
+                      <span>Go to Unit 2: Quiz!</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isSpellingSequence && voiceMode === 'idle') {
+                          setShowCard(false);
+                          spin();
+                        }
+                      }}
+                      disabled={isSpellingSequence || voiceMode !== 'idle'}
+                      className="flex-1 py-2.5 sm:py-4 px-3 sm:px-5 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-base md:text-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white flex items-center justify-center space-x-1.5 sm:space-x-2 shadow-xl transition transform hover:scale-105 active:scale-95 disabled:opacity-50"
+                    >
+                      <span className="text-base sm:text-2xl">🎯</span>
+                      <span>Spin again</span>
+                    </button>
+                  )}
                 </div>
               </div>
             )}
+          </div>
+        );
+      };
+
+      // --- UNIT 2: LISTENING & PICTURE QUIZ ---
+      const ListeningQuiz = ({ words, onClose, onComplete, speakWord, isMuted, setIsMuted }) => {
+        // Words for testing
+        const [quizWords] = useState(() => {
+          if (words.length <= 1) return words;
+          return [...words].sort(() => 0.5 - Math.random());
+        });
+
+        const [currentIndex, setCurrentIndex] = useState(0);
+        const [correctAnswers, setCorrectAnswers] = useState(0);
+        const [selectedOptionId, setSelectedOptionId] = useState(null);
+        const [isAnswered, setIsAnswered] = useState(false);
+        const [currentOptions, setCurrentOptions] = useState([]);
+        const [isFinished, setIsFinished] = useState(false);
+        const [studentName, setStudentName] = useState('');
+        const [nameError, setNameError] = useState('');
+        const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
+        const currentTarget = quizWords[currentIndex];
+
+        // Sound effect generator for feedback
+        const playSoundEffect = (type) => {
+          if (isMuted) return;
+          try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            const now = ctx.currentTime;
+
+            if (type === 'correct') {
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(523.25, now); // C5
+              osc.frequency.setValueAtTime(659.25, now + 0.12); // E5
+              osc.frequency.setValueAtTime(783.99, now + 0.24); // G5
+              gain.gain.setValueAtTime(0.3, now);
+              gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+              osc.start(now);
+              osc.stop(now + 0.45);
+            } else if (type === 'wrong') {
+              osc.type = 'sawtooth';
+              osc.frequency.setValueAtTime(180, now);
+              osc.frequency.setValueAtTime(130, now + 0.15);
+              gain.gain.setValueAtTime(0.2, now);
+              gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+              osc.start(now);
+              osc.stop(now + 0.35);
+            }
+          } catch (e) {}
+        };
+
+        // Prepare 3 options (target + 2 random distractors) whenever question changes
+        useEffect(() => {
+          if (!currentTarget) return;
+          setSelectedOptionId(null);
+          setIsAnswered(false);
+
+          const others = words.filter(w => w.id !== currentTarget.id);
+          const shuffledOthers = [...others].sort(() => 0.5 - Math.random());
+          const distractors = shuffledOthers.slice(0, 2);
+
+          const choices = [currentTarget, ...distractors];
+          setCurrentOptions(choices.sort(() => 0.5 - Math.random()));
+        }, [currentIndex, currentTarget, words]);
+
+        // Play audio for current word
+        const playWord = useCallback(() => {
+          if (!currentTarget) return;
+          setIsPlayingAudio(true);
+          if (currentTarget.audioUrl) {
+            try {
+              const audio = new Audio(currentTarget.audioUrl);
+              audio.onended = () => setIsPlayingAudio(false);
+              audio.onerror = () => {
+                speakWord(currentTarget.text);
+                setIsPlayingAudio(false);
+              };
+              audio.play().catch(() => {
+                speakWord(currentTarget.text);
+                setIsPlayingAudio(false);
+              });
+            } catch (e) {
+              speakWord(currentTarget.text);
+              setIsPlayingAudio(false);
+            }
+          } else {
+            speakWord(currentTarget.text);
+            setTimeout(() => setIsPlayingAudio(false), 900);
+          }
+        }, [currentTarget, speakWord]);
+
+        // Auto-play audio when question loads
+        useEffect(() => {
+          if (isFinished || !currentTarget) return;
+          const timer = setTimeout(() => {
+            playWord();
+          }, 450);
+          return () => clearTimeout(timer);
+        }, [currentIndex, isFinished, playWord]);
+
+        // Shortcut: Ctrl+U to jump directly to asking for student name to deliver the diploma
+        useEffect(() => {
+          const handleKeyDown = (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U')) {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!isFinished) {
+                setCorrectAnswers(quizWords.length);
+                setIsFinished(true);
+              }
+            }
+          };
+          window.addEventListener('keydown', handleKeyDown);
+          return () => window.removeEventListener('keydown', handleKeyDown);
+        }, [isFinished, quizWords.length]);
+
+        const handleSelectOption = (option) => {
+          if (isAnswered) return;
+          setIsAnswered(true);
+          setSelectedOptionId(option.id);
+
+          const isCorrect = option.id === currentTarget.id;
+          if (isCorrect) {
+            playSoundEffect('correct');
+            setCorrectAnswers(prev => prev + 1);
+          } else {
+            playSoundEffect('wrong');
+          }
+
+          // Delay to show visual feedback and then advance
+          setTimeout(() => {
+            if (currentIndex + 1 < quizWords.length) {
+              setCurrentIndex(prev => prev + 1);
+            } else {
+              setIsFinished(true);
+            }
+          }, 1100);
+        };
+
+        const handleGenerateDiploma = (e) => {
+          e.preventDefault();
+          const trimmed = studentName.trim();
+          if (!trimmed) {
+            setNameError("Please enter the student's name.");
+            return;
+          }
+          const computedScore = Math.round((correctAnswers / quizWords.length) * 100);
+          onComplete({
+            score: computedScore,
+            studentName: trimmed,
+            correctCount: correctAnswers,
+            totalCount: quizWords.length,
+          });
+        };
+
+        // If test finished -> show Name Prompt & Score Screen
+        if (isFinished) {
+          const computedScore = Math.round((correctAnswers / quizWords.length) * 100);
+          return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
+              <div className="bg-white border-4 border-amber-400 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl text-center relative my-auto">
+                <div className="text-5xl sm:text-6xl mb-3">🎓 🌟 🎉</div>
+                <h1 className="font-bubble text-3xl sm:text-5xl font-black text-indigo-950 tracking-widest uppercase">
+                  FOOTPRINTS
+                </h1>
+                <p className="text-xs sm:text-sm font-bold tracking-widest text-amber-600 uppercase font-cinzel mt-1">
+                  Unit 2: Examination Completed
+                </p>
+
+                {/* Score display over 100 */}
+                <div className="my-5 p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-yellow-100 border-2 border-amber-300 shadow-inner">
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-amber-800 block">
+                    Official Score
+                  </span>
+                  <div className="text-4xl sm:text-6xl font-black text-indigo-950 my-1 font-cinzel">
+                    {computedScore} <span className="text-xl sm:text-2xl text-gray-500 font-sans">/ 100</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-gray-700 font-semibold">
+                    {correctAnswers} of {quizWords.length} correct figures ({Math.round((correctAnswers / quizWords.length) * 100)}%)
+                  </p>
+                </div>
+
+                {/* Student name request form */}
+                <form onSubmit={handleGenerateDiploma} className="space-y-4 text-left">
+                  <div>
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5">
+                      Student's Full Name:
+                      <span className="block text-[11px] font-normal text-gray-500">
+                        (Name to appear on the official diploma)
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      value={studentName}
+                      onChange={(e) => {
+                        setStudentName(e.target.value);
+                        if (nameError) setNameError('');
+                      }}
+                      placeholder="e.g. Mateo Gonzales Morales"
+                      autoFocus
+                      className="w-full px-4 py-3 rounded-xl border-2 border-indigo-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-400 bg-white text-gray-900 font-bold text-base outline-none transition"
+                    />
+                    {nameError && (
+                      <p className="text-rose-600 text-xs font-semibold mt-1">
+                        ⚠️ {nameError}
+                      </p>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-600 hover:to-yellow-500 text-gray-950 font-black text-base sm:text-lg shadow-xl hover:shadow-2xl transition transform hover:scale-[1.02] active:scale-95 flex items-center justify-center space-x-2 border-2 border-white cursor-pointer"
+                  >
+                    <span>📜</span>
+                    <span>Issue Official FOOTPRINTS Diploma</span>
+                    <span>➔</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          );
+        }
+
+        // Active quiz screen:
+        const progressPercent = Math.round(((currentIndex) / quizWords.length) * 100);
+
+        return (
+          <div className="fixed inset-0 z-50 flex flex-col bg-white text-gray-900 overflow-y-auto select-none">
+            {/* Header bar */}
+            <div className="w-full bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+              <div className="flex items-center space-x-3">
+                <h1 className="font-bubble text-2xl sm:text-3xl text-indigo-900 tracking-wider">
+                  FOOTPRINTS
+                </h1>
+                <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-300">
+                  Unit 2: Listen & Choose Picture
+                </span>
+              </div>
+
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <div className="text-right">
+                  <span className="text-xs text-gray-500 block font-medium">Progress</span>
+                  <span className="text-xs sm:text-sm font-black text-amber-600">
+                    {currentIndex + 1} / {quizWords.length}
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition border border-gray-300"
+                  title={isMuted ? 'Unmute' : 'Mute'}
+                >
+                  {isMuted ? '🔇' : '🔊'}
+                </button>
+
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white transition font-bold"
+                  title="Close and exit"
+                >
+                  <XIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full bg-gray-100 h-2">
+              <div
+                className="bg-gradient-to-r from-amber-500 to-yellow-400 h-2 transition-all duration-300 ease-out"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+
+            {/* Content Area */}
+            <div className="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 flex flex-col items-center justify-between">
+              {/* Prompt & Audio Replay Button */}
+              <div className="text-center my-3 sm:my-5">
+                <p className="text-xs sm:text-sm font-bold uppercase tracking-widest text-amber-700 mb-2">
+                  🎧 Listen carefully and choose the correct picture
+                </p>
+
+                <button
+                  onClick={playWord}
+                  className={`px-6 sm:px-8 py-3 sm:py-4 rounded-3xl font-black text-base sm:text-xl shadow-2xl flex items-center justify-center space-x-3 transition transform hover:scale-105 active:scale-95 border-2 border-amber-300 cursor-pointer ${
+                    isPlayingAudio
+                      ? 'bg-amber-400 text-slate-950 ring-4 ring-amber-300 animate-pulse'
+                      : 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 hover:from-amber-400 hover:to-yellow-300'
+                  }`}
+                >
+                  <SpeakerWaveIcon className="h-7 w-7 sm:h-8 sm:w-8 animate-bounce" />
+                  <span>Listen Again</span>
+                </button>
+              </div>
+
+              {/* 3 Figure Options Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 w-full my-auto max-w-4xl">
+                {currentOptions.map((opt, idx) => {
+                  const isSelected = selectedOptionId === opt.id;
+                  const isTarget = opt.id === currentTarget.id;
+
+                  let cardStyle = 'bg-white border-2 border-gray-200 hover:border-amber-400 hover:scale-[1.03] shadow-lg hover:shadow-xl';
+                  if (isAnswered) {
+                    if (isTarget) {
+                      cardStyle = 'bg-emerald-50 border-4 border-emerald-500 ring-4 ring-emerald-300 scale-105 shadow-2xl';
+                    } else if (isSelected) {
+                      cardStyle = 'bg-rose-50 border-4 border-rose-500 ring-4 ring-rose-300 scale-95 opacity-80';
+                    } else {
+                      cardStyle = 'opacity-40 border-2 border-gray-200';
+                    }
+                  }
+
+                  return (
+                    <div
+                      key={opt.id}
+                      onClick={() => handleSelectOption(opt)}
+                      className={`group relative rounded-3xl p-3 sm:p-4 flex flex-col items-center justify-center transition-all duration-300 cursor-pointer select-none ${cardStyle}`}
+                    >
+                      {/* Number Badge */}
+                      <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-gray-900 border border-white/40 flex items-center justify-center text-xs font-black text-white shadow">
+                        {idx + 1}
+                      </div>
+
+                      {/* Status Indicator on Answer */}
+                      {isAnswered && isTarget && (
+                        <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-base font-black shadow-lg animate-bounce">
+                          ✓
+                        </div>
+                      )}
+                      {isAnswered && isSelected && !isTarget && (
+                        <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center text-base font-black shadow-lg">
+                          ✗
+                        </div>
+                      )}
+
+                      {/* Figure Image */}
+                      <div className="w-full h-44 sm:h-56 flex items-center justify-center overflow-hidden rounded-2xl bg-white p-2">
+                        <img
+                          src={opt.imageUrl || createWordSvgIllustration(opt.text)}
+                          alt="Figure option"
+                          className="max-w-full max-h-full object-contain transition-transform group-hover:scale-105 duration-300"
+                        />
+                      </div>
+
+                      {/* Hint / Word reveal */}
+                      <span className="mt-3 text-xs font-bold text-gray-500 group-hover:text-amber-600 transition">
+                        {isAnswered && isTarget ? opt.text.toUpperCase() : 'Tap to choose'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Bottom Current Score Tally */}
+              <div className="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-gray-600 font-semibold">
+                Correct answers: <span className="text-emerald-600 font-black">{correctAnswers}</span> of {currentIndex + (isAnswered ? 1 : 0)}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // --- DIPLOMA OF EXCELLENCE (FOOTPRINTS) ---
+      const ModernDiploma = ({ studentName, score, onClose, onRetakeQuiz }) => {
+        const printCertificate = () => {
+          window.print();
+        };
+
+        const getHonorsLabel = (s) => {
+          if (s >= 95) return 'Highest Honors - Summa Cum Laude';
+          if (s >= 85) return 'High Distinction - Magna Cum Laude';
+          if (s >= 75) return 'Distinction - Cum Laude';
+          if (s >= 60) return 'Proficiency Certificate';
+          return 'Merit & Participation';
+        };
+
+        const formattedDate = new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+
+        const certificateId = useMemo(() => {
+          return 'FP-ENG-' + Math.floor(100000 + Math.random() * 900000);
+        }, []);
+
+        return (
+          <div id="diploma-wrapper" className="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex flex-col items-center justify-start overflow-y-auto p-2 sm:p-6 select-none">
+            {/* Action bar (Hidden when printing) */}
+            <div className="no-print max-w-5xl w-full flex flex-wrap items-center justify-between gap-2 mb-4 p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
+              <div className="flex items-center space-x-2 text-white">
+                <span className="text-xl">📜</span>
+                <span className="font-bold text-sm sm:text-base">Official Footprints Diploma</span>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={printCertificate}
+                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-slate-950 font-black text-xs sm:text-sm rounded-xl shadow-lg transition flex items-center space-x-1.5 cursor-pointer border border-white"
+                  title="Print or Save PDF"
+                >
+                  <span>🖨️</span>
+                  <span>Print / Save PDF</span>
+                </button>
+
+                <button
+                  onClick={onRetakeQuiz}
+                  className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center space-x-1"
+                >
+                  <span>🔄</span>
+                  <span className="hidden sm:inline">Retake Test</span>
+                </button>
+
+                <button
+                  onClick={onClose}
+                  className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs sm:text-sm rounded-xl transition"
+                >
+                  ✕ Close
+                </button>
+              </div>
+            </div>
+
+            {/* Modern Brilliant White Certificate */}
+            <div
+              id="diploma-card"
+              className="bg-white text-slate-900 w-full max-w-5xl shadow-2xl rounded-2xl relative p-6 sm:p-12 border-8 border-[#D4AF37] my-auto overflow-hidden"
+              style={{
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 2px #1E3A8A inset',
+              }}
+            >
+              {/* Subtle Background Watermark Pattern */}
+              <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center select-none overflow-hidden">
+                <span className="font-bubble text-[22vw] text-slate-900 font-black tracking-widest uppercase">
+                  FOOTPRINTS
+                </span>
+              </div>
+
+              {/* Decorative Modern Corner Accents */}
+              <div className="absolute top-2 left-2 w-10 h-10 border-t-4 border-l-4 border-amber-500 pointer-events-none" />
+              <div className="absolute top-2 right-2 w-10 h-10 border-t-4 border-r-4 border-amber-500 pointer-events-none" />
+              <div className="absolute bottom-2 left-2 w-10 h-10 border-b-4 border-l-4 border-amber-500 pointer-events-none" />
+              <div className="absolute bottom-2 right-2 w-10 h-10 border-b-4 border-r-4 border-amber-500 pointer-events-none" />
+
+              {/* Header: FOOTPRINTS */}
+              <div className="text-center relative z-10">
+                <div className="inline-flex items-center justify-center space-x-2 text-amber-600 text-xs sm:text-sm font-bold tracking-[0.3em] uppercase mb-1 font-cinzel">
+                  <span>★</span>
+                  <span>Educational & Bilingual Excellence</span>
+                  <span>★</span>
+                </div>
+
+                <h1 className="font-bubble text-4xl sm:text-7xl font-black tracking-wider sm:tracking-widest text-[#0f172a] drop-shadow-sm uppercase">
+                  FOOTPRINTS
+                </h1>
+
+                <div className="w-48 sm:w-64 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent mx-auto my-2" />
+
+                <h2 className="text-lg sm:text-2xl font-bold tracking-widest text-[#1e293b] font-cinzel uppercase mt-2">
+                  Diploma of Excellence
+                </h2>
+                <p className="text-xs sm:text-sm italic text-slate-600 mt-1 font-playfair">
+                  This certifies that
+                </p>
+              </div>
+
+              {/* Student Name */}
+              <div className="text-center my-3 sm:my-6 relative z-10">
+                <div className="inline-block relative">
+                  <h3 className="text-3xl sm:text-6xl font-black text-[#0f172a] font-playfair italic tracking-wide px-6 sm:px-12 py-1 max-w-full break-words">
+                    {studentName || 'Student Name'}
+                  </h3>
+                  <div className="w-full h-1 bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 rounded-full mt-1" />
+                </div>
+              </div>
+
+              {/* Citation in English */}
+              <div className="text-center max-w-3xl mx-auto px-4 relative z-10">
+                <p className="text-xs sm:text-base text-slate-700 leading-relaxed font-serif">
+                  has successfully completed the comprehensive <span className="font-bold text-slate-900">Footprints English Spelling & Auditory Phonics Assessment</span>, demonstrating outstanding listening comprehension, phonetic mastery, and academic dedication with an official grade of:
+                </p>
+              </div>
+
+              {/* Score Ribbon / Badge over 100 */}
+              <div className="flex justify-center my-4 sm:my-6 relative z-10">
+                <div className="relative bg-gradient-to-br from-amber-50 via-white to-amber-50 border-2 border-amber-400 rounded-2xl py-2 px-8 sm:px-12 shadow-md flex flex-col items-center">
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-amber-800 font-cinzel">
+                    Official Assessment Score
+                  </span>
+                  <div className="text-3xl sm:text-5xl font-black text-[#0f172a] tracking-tight font-cinzel my-0.5">
+                    {score} <span className="text-lg sm:text-2xl text-slate-500 font-sans">/ 100</span>
+                  </div>
+                  <span className="text-[11px] sm:text-xs font-extrabold text-emerald-800 tracking-wide uppercase">
+                    {getHonorsLabel(score)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Bottom Verification, Seal & Signatures */}
+              <div className="grid grid-cols-3 items-end pt-4 sm:pt-6 mt-4 border-t border-slate-200 relative z-10 gap-2">
+                {/* Left: Date & Certificate ID */}
+                <div className="text-left space-y-1">
+                  <div className="text-[11px] sm:text-xs text-slate-600 font-serif">
+                    <span className="font-bold text-slate-800">Date:</span> {formattedDate}
+                  </div>
+                  <div className="text-[10px] sm:text-xs text-slate-500 font-mono">
+                    <span className="font-semibold text-slate-700">Serial ID:</span> {certificateId}
+                  </div>
+                  <div className="text-[9px] sm:text-[10px] text-emerald-700 font-semibold tracking-wider uppercase">
+                    ✓ Verified Footprints Exam
+                  </div>
+                </div>
+
+                {/* Center: Official Golden Seal */}
+                <div className="flex flex-col items-center justify-center">
+                  <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-300 to-amber-600 p-1 shadow-lg flex items-center justify-center text-center">
+                    <div className="w-full h-full rounded-full border-2 border-dashed border-amber-900/40 flex flex-col items-center justify-center p-1 bg-gradient-to-b from-yellow-200 to-amber-400 text-[#3d2306]">
+                      <span className="text-xs sm:text-base font-black">★ ★ ★</span>
+                      <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-tighter leading-tight font-cinzel">
+                        OFFICIAL SEAL
+                      </span>
+                      <span className="text-[6px] sm:text-[7px] font-bold">FOOTPRINTS</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: Signature by Ing. Milko Gonzales C. */}
+                <div className="flex flex-col items-center sm:items-end text-center sm:text-right">
+                  {/* Signature handwritten cursive style */}
+                  <div className="font-signature text-3xl sm:text-5xl text-blue-900 tracking-wide select-none pr-2 transform -rotate-3 mb-1">
+                    Milko Gonzales C.
+                  </div>
+                  <div className="w-44 sm:w-56 h-0.5 bg-slate-800 mb-1" />
+                  <div className="font-cinzel font-black text-xs sm:text-sm text-slate-900 tracking-wider">
+                    Ing. Milko Gonzales C.
+                  </div>
+                  <div className="text-[10px] sm:text-xs font-semibold text-slate-600">
+                    General Academic Director
+                  </div>
+                  <div className="text-[9px] sm:text-[11px] text-slate-500">
+                    Footprints Bilingual System
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         );
       };
@@ -1965,7 +2594,7 @@
         const [words, setWords] = useState(createInitialWords);
         const [logo, setLogo] = useState(null);
         const [wheelBackground, setWheelBackground] = useState('#1f2937');
-        const [isWhiteBg, setIsWhiteBg] = useState(false);
+        const [isWhiteBg, setIsWhiteBg] = useState(true);
         const [isMuted, setIsMuted] = useState(false);
         const [hideLetters, setHideLetters] = useState(false);
         const [settings, setSettings] = useState({
@@ -1982,6 +2611,7 @@
         const [gameMode, setGameMode] = useState('wheel');
         const [wordForSpelling, setWordForSpelling] = useState(null);
         const [viewingImage, setViewingImage] = useState(null);
+        const [quizResult, setQuizResult] = useState(null);
 
         const audioContextRef = useRef(null);
         const wordsRef = useRef([]);
@@ -2179,6 +2809,20 @@
           addToast(`Downloading ${settings.courseName}.zip`, 'success');
         };
 
+        // Global shortcut: Ctrl+U (or Cmd+U) to jump directly to Unit 2 (Listening & Figure Quiz)
+        useEffect(() => {
+          const handleKeyDown = (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U')) {
+              e.preventDefault();
+              if (gameMode !== 'quiz' && gameMode !== 'certificate') {
+                setGameMode('quiz');
+              }
+            }
+          };
+          window.addEventListener('keydown', handleKeyDown);
+          return () => window.removeEventListener('keydown', handleKeyDown);
+        }, [gameMode]);
+
         return (
           <div className="min-h-screen font-sans">
             <header className="bg-white dark:bg-gray-800 shadow-md p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3">
@@ -2201,11 +2845,11 @@
                       ? 'bg-gray-800 text-white border-gray-600 hover:bg-gray-700'
                       : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
                   }`}
-                  title="Cambiar color de fondo a blanco / oscuro"
+                  title="Switch background color to white / dark"
                 >
                   <span className={`w-2.5 h-2.5 rounded-full border ${isWhiteBg ? 'bg-gray-900 border-gray-300' : 'bg-white border-gray-400'}`}></span>
-                  <span className="hidden xs:inline">{isWhiteBg ? 'Fondo Oscuro' : 'Fondo Blanco'}</span>
-                  <span className="xs:hidden">{isWhiteBg ? 'Oscuro' : 'Blanco'}</span>
+                  <span className="hidden xs:inline">{isWhiteBg ? 'Dark Mode' : 'White Mode'}</span>
+                  <span className="xs:hidden">{isWhiteBg ? 'Dark' : 'White'}</span>
                 </button>
                 <button
                   onClick={() => setGameMode('wheel')}
@@ -2214,6 +2858,16 @@
                 >
                   <PlayIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                   <span>Play Wheel</span>
+                </button>
+                <button
+                  onClick={() => setGameMode('quiz')}
+                  disabled={words.filter(w => w.status !== WordStatus.FAILED).length === 0}
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-950 rounded-md font-bold hover:from-amber-600 hover:to-yellow-500 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm shadow"
+                  title="Unit 2: Listen & Choose Picture Quiz (Score over 100 with Diploma)"
+                >
+                  <span>🎧</span>
+                  <span className="hidden xs:inline">Unit 2: Quiz</span>
+                  <span className="xs:hidden">U2</span>
                 </button>
                 <button
                   onClick={handleDownload}
@@ -2262,6 +2916,7 @@
                 setIsMuted={setIsMuted}
                 hideLetters={hideLetters}
                 setHideLetters={setHideLetters}
+                onStartQuiz={() => setGameMode('quiz')}
               />
             )}
 
@@ -2271,6 +2926,29 @@
                 onClose={() => setGameMode(null)}
                 onPronounce={(txt) => speakWord(txt, false)}
                 onSpellOut={(txt) => speakWord(txt, true)}
+              />
+            )}
+
+            {gameMode === 'quiz' && (
+              <ListeningQuiz
+                words={words.filter(w => w.status !== WordStatus.FAILED)}
+                onClose={() => setGameMode(null)}
+                onComplete={(result) => {
+                  setQuizResult(result);
+                  setGameMode('certificate');
+                }}
+                speakWord={speakWord}
+                isMuted={isMuted}
+                setIsMuted={setIsMuted}
+              />
+            )}
+
+            {gameMode === 'certificate' && quizResult && (
+              <ModernDiploma
+                studentName={quizResult.studentName}
+                score={quizResult.score}
+                onClose={() => setGameMode(null)}
+                onRetakeQuiz={() => setGameMode('quiz')}
               />
             )}
 
@@ -2297,7 +2975,7 @@
                         }
                       }}
                       className="w-full h-full max-w-full max-h-[85vh] sm:max-h-[90vh] rounded-2xl cursor-pointer hover:opacity-95 transition transform hover:scale-[1.01] object-contain" 
-                      title="Presiona para escuchar"
+                      title="Click to listen"
                     />
                   ) : (
                     <div
@@ -2311,7 +2989,7 @@
                         }
                       }}
                       className="bg-indigo-600 text-white font-black text-5xl sm:text-7xl px-16 py-20 rounded-3xl shadow-2xl cursor-pointer hover:scale-105 transition transform text-center max-w-3xl break-words"
-                      title="Presiona para escuchar"
+                      title="Click to listen"
                     >
                       {typeof viewingImage === 'object' ? viewingImage.text : ''}
                     </div>
@@ -2350,3 +3028,5 @@
     </script>
   </body>
 </html>
+
+
