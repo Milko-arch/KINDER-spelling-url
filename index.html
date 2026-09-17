@@ -1980,19 +1980,6 @@
                     </button>
                   )}
 
-                  {/* Spell a word Button */}
-                  <button
-                    onClick={handleSpellWordSequence}
-                    disabled={isSpellingSequence || voiceMode !== 'idle'}
-                    className={`flex-1 py-2.5 sm:py-4 px-3 sm:px-5 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-base md:text-lg flex items-center justify-center space-x-1.5 sm:space-x-2 shadow-xl transition transform active:scale-95 ${
-                      isSpellingSequence
-                        ? 'bg-pink-600 text-white animate-pulse'
-                        : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white hover:scale-105'
-                    }`}
-                  >
-                    <span className="text-base sm:text-2xl">🔤</span>
-                    <span>Spell a word</span>
-                  </button>
 
                   {/* Girar de nuevo o Pasar a Unidad 2 Button */}
                   {validWords.length === 0 ? (
